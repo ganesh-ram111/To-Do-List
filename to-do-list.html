@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>To-Do List</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: #2d3748;
+            font-size: 2.5rem;
+            margin-bottom: 2rem;
+            font-weight: 700;
+        }
+
+        .input-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            background: #f7fafc;
+            padding: 1.5rem;
+            border-radius: 10px;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        button.add {
+            grid-column: 1 / -1;
+            padding: 12px;
+            background-color: #667eea;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        button.add:hover {
+            background-color: #5a67d8;
+            transform: translateY(-1px);
+        }
+
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        li {
+            background: white;
+            padding: 1rem;
+            margin: 0.5rem 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: transform 0.2s ease;
+        }
+
+        li:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        li div {
+            flex: 1;
+        }
+
+        li strong {
+            color: #2d3748;
+            font-size: 1.1rem;
+            display: block;
+            margin-bottom: 0.25rem;
+        }
+
+        li small {
+            color: #718096;
+            font-size: 0.875rem;
+        }
+
+        li button {
+            background-color: #fc8181;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            padding: 8px 16px;
+            cursor: pointer;
+            font-size: 0.875rem;
+            margin-left: 1rem;
+            transition: all 0.2s ease;
+        }
+
+        li button:hover {
+            background-color: #f56565;
+        }
+
+        @media (max-width: 640px) {
+            body {
+                padding: 1rem;
+            }
+
+            .container {
+                padding: 1rem;
+            }
+
+            h1 {
+                font-size: 2rem;
+                margin-bottom: 1.5rem;
+            }
+
+            .input-container {
+                padding: 1rem;
+            }
+
+            li {
+                flex-direction: column;
+                text-align: center;
+                gap: 1rem;
+            }
+
+            li button {
+                margin-left: 0;
+                width: 100%;
+            }
+        }
+
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 1.75rem;
+            }
+
+            input, button {
+                font-size: 0.875rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>To-Do List</h1>
+        <div class="input-container">
+            <input type="text" id="task" placeholder="Enter your task">
+            <input type="date" id="date">
+            <input type="time" id="time">
+            <button type="submit" class="add">Add Task</button>
+        </div>
+        <div>
+            <ul id="list"></ul>
+        </div>
+    </div>
+
+    <script>
+        let task = document.getElementById("task");
+        let list = document.getElementById("list");
+        let add = document.querySelector(".add");
+        let date = document.getElementById("date");
+        let time = document.getElementById("time");
+        let arr = [];
+
+        add.addEventListener("click", function render() {
+            const dateinput = date.value;
+            const timeinput = time.value;
+
+            // Prevent adding empty tasks
+            if (task.value.trim() === "" || dateinput === "" || timeinput === "") {
+                alert("Please fill in all fields before adding a task!");
+                return;
+            }
+
+            arr.push({ name: task.value.trim(), date: dateinput, time: timeinput });
+            let toHTML = "";
+
+            for (let i = 0; i < arr.length; i++) {
+                const html = `
+                    <li>
+                        <div>
+                            <strong>${arr[i].name}</strong><br>
+                            <small>${arr[i].date} ${arr[i].time}</small>
+                        </div>
+                        <button onclick="deletetask(${i})">Delete</button>
+                    </li>
+                `;
+                toHTML += html;
+            }
+
+            list.innerHTML = toHTML;
+            task.value = "";
+            date.value = "";
+            time.value = "";
+        });
+
+        function deletetask(index) {
+            arr.splice(index, 1);
+            let toHTML = "";
+
+            for (let i = 0; i < arr.length; i++) {
+                const html = `
+                    <li>
+                        <div>
+                            <strong>${arr[i].name}</strong><br>
+                            <small>${arr[i].date} ${arr[i].time}</small>
+                        </div>
+                        <button onclick="deletetask(${i})">Delete</button>
+                    </li>
+                `;
+                toHTML += html;
+            }
+
+            list.innerHTML = toHTML;
+        }
+    </script>
+</body>
+</html>
