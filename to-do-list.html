@@ -194,9 +194,10 @@
         let add = document.querySelector(".add");
         let date = document.getElementById("date");
         let time = document.getElementById("time");
-        let arr = [];
+        let arr = JSON.parse(localStorage.getItem("task")) || []
 
-        add.addEventListener("click", function render() {
+
+        add.addEventListener("click", function () {
             const dateinput = date.value;
             const timeinput = time.value;
 
@@ -207,6 +208,11 @@
             }
 
             arr.push({ name: task.value.trim(), date: dateinput, time: timeinput });
+            savetolocalstorage()
+            render()
+            
+        });
+        function render(){
             let toHTML = "";
 
             for (let i = 0; i < arr.length; i++) {
@@ -226,26 +232,20 @@
             task.value = "";
             date.value = "";
             time.value = "";
-        });
+            
+
+        }
+        function savetolocalstorage()
+        {
+            localStorage.setItem("tack",JSON.stringify(arr))
+        }
 
         function deletetask(index) {
             arr.splice(index, 1);
-            let toHTML = "";
-
-            for (let i = 0; i < arr.length; i++) {
-                const html = `
-                    <li>
-                        <div>
-                            <strong>${arr[i].name}</strong><br>
-                            <small>${arr[i].date} ${arr[i].time}</small>
-                        </div>
-                        <button onclick="deletetask(${i})">Delete</button>
-                    </li>
-                `;
-                toHTML += html;
-            }
-
-            list.innerHTML = toHTML;
+            savetolocalstorage()
+            render()
+            
+            
         }
     </script>
 </body>
